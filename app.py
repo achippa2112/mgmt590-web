@@ -1,9 +1,9 @@
 import requests
 import json
 import streamlit as st
+import os
 
-url = "https://mgmt590-rest-api-kprv24rveq-uc.a.run.app/answer"
-
+url = "{}".format(os.environ.get('PG_API_URL'))
 st.title('Amazing Question Answering Thing!')
 
 # Inputs
@@ -18,7 +18,7 @@ if st.button('Answer Question'):
         "context": context
         })
     headers = {'Content-Type': 'application/json'}
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url+"/answer", headers=headers, data=payload)
     answer = response.json()['answer']
 
     st.success(answer)
