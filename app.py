@@ -9,6 +9,15 @@ import time
 
 url = "{}".format(os.environ.get('PG_API_URL'))
 
+st.title('Question answering app !!')
+
+if st.button('Click to view available models'):
+    newurl=url + '/models'
+    response=requests.request("GET",newurl)
+    models=response.json()
+    for m in models:
+        st.success(m['name'])
+
 st.title('Add a model')
 name=st.text_input('name')
 tokenizer= st.text_input('tokenizer')
@@ -25,6 +34,20 @@ if st.button('Enter to add model'):
     response = requests.request("PUT", newurl, headers=headers, data=payload)
     st.success("Successfully added new model '{}'".format(response.json()[-1]['name']))
 
+
+st.title('Delete Models')
+allmodels=url + '/models'
+response=requests.request("GET",allmodels)
+models=response.json()
+modellist=[]
+for m in models:
+    modellist.append(m['name'])
+option=st.selectbox('Select a model',modellist)
+if st.button('Delete Model'):
+    updatedurl=url + '/models' + '?model=' + option
+    response1=requests.request("DELETE",updatedurl)
+    st.success("Successfully deleted model '{}'".format(option))
+    
 
 st.title('Answer the Question')
 question = st.text_input('Question')
@@ -43,7 +66,7 @@ if st.button('Answer Question'):
 
     st.success(answer)
 
-st.title("Upload CSV")
+st.title("Upload excel with questions and contexts")
 
 uploaded_file = st.file_uploader("Choose a file to upload")
     
@@ -66,25 +89,4 @@ if uploaded_file is not None:
     df['finalanswer']=answer_list
     st.table(df)      
 
-st.title("View/Delete Models")
 
-if st.button('Click to view available models'):
-    newurl=url + '/models'
-    response=requests.request("GET",newurl)
-    models=response.json()
-    for m in models:
-        st.success(m['name'])
-
-if st.button('Click to Delete Models'):
-    allmodels=url + '/models'
-    response=requests.request("GET",allmodels)
-    models=response.json()
-    modellist=[]
-    for m in models:
-        modellist.append(m['name'])
-    option=st.selectbox('Select a model',modellist)
-    st.write('You have selected:',option)
-    if st.button('Are you sure you want to delete the selected model'):
-        updatedurl=url + '/models' + '?model=' + option
-        response1=requests.request("DELETE",updatedurl)
-        st.success("Successfully deleted model '{}'".format(option))
