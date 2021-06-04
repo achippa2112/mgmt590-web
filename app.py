@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import time
 
-#webapp
+#webappp
 
 url = "{}".format(os.environ.get('PG_API_URL'))
 
